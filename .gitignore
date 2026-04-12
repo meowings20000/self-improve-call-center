@@ -1,0 +1,16 @@
+# Binaries
+backend/backend.exe
+backend/backend.exe~
+*.exe
+
+# Build artifacts
+build_errors.txt
+build_result.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
