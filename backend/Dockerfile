@@ -1,30 +1,13 @@
-# Build stage
-FROM golang:1.21-alpine AS builder
-
-WORKDIR /app
-
-# Copy go mod files
+FROM golang:1.23-alpine AS build
+WORKDIR /src
 COPY go.mod ./
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /lingolift .
 
-# Download dependencies
-RUN go mod download
-
-# Copy source code
-COPY main.go ./
-
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
-
-# Runtime stage
-FROM alpine:latest
-
-WORKDIR /app
-
-# Copy binary from builder
-COPY --from=builder /app/main .
-
-# Expose port
+FROM alpine:3.21
+RUN addgroup -S app && adduser -S app -G app
+COPY --from=build /lingolift /usr/local/bin/lingolift
+USER app
 EXPOSE 8080
-
-# Run the application
-CMD ["./main"]
+ENV PORT=8080
+CMD ["lingolift"]

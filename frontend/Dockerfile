@@ -1,12 +1,6 @@
-FROM nginx:alpine
-
-# Copy frontend files
-COPY index.html /usr/share/nginx/html/
-
-# Copy custom nginx config
+FROM nginx:1.27-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port
+COPY index.html styles.css app.js /usr/share/nginx/html/
 EXPOSE 80
-
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD wget -q --spider http://127.0.0.1/ || exit 1
 CMD ["nginx", "-g", "daemon off;"]
